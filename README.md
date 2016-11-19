@@ -35,7 +35,7 @@ func (u *User) GetGroupIdentifier() []byte {
 }
 
 func (u *User) AlwaysEnabled() bool {
-	return u.isAdmin
+	return u.isAdmin //Enable all features for admin users
 }
 ```
 
@@ -55,8 +55,8 @@ In our example the feature is enabled for half of the users. Those users will al
 
 Certain groups might need to always have a feature enabled. This can be done by returning true for the `AlwaysEnabled` method of the `feature.Group` interface.
 ```go
-user := &User{123, true, ...}
-if flag.EnabledFor(user) {
+admin := &User{123, true, ...}
+if flag.EnabledFor(admin) {
 	// Do feature
 } else {
 	// Don't do feature
