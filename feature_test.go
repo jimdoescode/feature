@@ -76,7 +76,7 @@ func TestAlwaysEnabledFor(t *testing.T) {
 // values. They should converge on the flag percentage but might be
 // over the desired tolerance sometimes.
 func TestEnabled(t *testing.T) {
-	percent := 0.5
+	percent := 0.75
 	tolerance := 0.01
 	flag := feature.NewFlag("random_feature", percent)
 	max := 100000
