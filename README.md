@@ -67,3 +67,10 @@ How's it work?
 --------------
 
 Feature flagging works by taking the group identifier and reducing it to a value between 0 and 1. If that value is less than the threshold set for a flag then the feature is enabled. Otherwise it's disabled. This allows you to execute experiments on certain groups or cautiously roll out a new feature.
+
+Credit where it's due
+---------------------
+
+The technique for reducing an identifier to a boolean comes from [this Etsy feature library](https://github.com/etsy/feature) which was written in PHP.
+
+All the code in this repo is licensed under the [MIT license](https://opensource.org/licenses/MIT)
