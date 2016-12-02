@@ -43,7 +43,7 @@ It's important that the `GetGroupIdentifier` method should return consistent byt
 
 Once you've satified the interface you can use the `EnabledFor` method.
 ```go
-user := &User{123, false, ...}
+user := &User{123, false, ...} // This would be fetched from a db or something
 if flag.EnabledFor(user) {
 	// Do feature
 } else {
@@ -55,7 +55,7 @@ In our example the feature is enabled for 25% of the users. Those users within t
 
 Certain groups might need to always have a feature flag enabled. This can be done by returning true for the `AlwaysEnabled` method of the `feature.Group` interface. In our example if a user has the isAdmin flag set to true then all feature flags will be enabled for that user.
 ```go
-admin := &User{123, true, ...}
+admin := &User{123, true, ...} // This would be fetched from a db or something
 if flag.EnabledFor(admin) {
 	// Do feature
 } else {
