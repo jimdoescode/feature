@@ -10,6 +10,7 @@ flag := feature.NewFlag("my new great feature", 0.25)
 
 To randomly enable a feature flag use the `Enabled` method. This flag will be enabled or not each time it's called. Over a number of calls the number of enabled vs disabled results will converge on the flag threshold. In our case that's 25%.
 ```go
+flag := feature.NewFlag("my new great feature", 0.25)
 if flag.Enabled() {
 	// Do feature
 } else {
@@ -39,10 +40,11 @@ func (u *User) AlwaysEnabled() bool {
 }
 ```
 
-It's important that the `GetGroupIdentifier` method should return consistent byte slices that are unique to each member. In the example the group identifier is the id field given to each User. This works great because it won't change for a user but is also unique to that user.
+It's important that the `GetGroupIdentifier` method should return byte slices that are unique to each member. In the example, the group identifier is the id field given to each User in the database. This works great because it shouldn't change and is unique to each user.
 
 Once you've satified the interface you can use the `EnabledFor` method.
 ```go
+flag := feature.NewFlag("my new great feature", 0.25)
 user := &User{123, false, ...} // This would be fetched from a db or something
 if flag.EnabledFor(user) {
 	// Do feature
@@ -51,17 +53,9 @@ if flag.EnabledFor(user) {
 }
 ```
 
-In our example the feature is enabled for 25% of the users. Those users within the threshold will always have the feature enabled unless the sample size is lowered by changing the flag's threshold percentage. Increasing the threshold percentage will enable the feature flag for new users that fall into the larger sample size.
+In our example the feature is enabled for 25% of the users. Those users within the 25% threshold will _always_ have the feature enabled. Increasing the threshold percentage will increase the number of users who can see the feature, decreasing will reduce the number of users who can see the feature.
 
-Certain groups might need to always have a feature flag enabled. This can be done by returning true for the `AlwaysEnabled` method of the `feature.Group` interface. In our example if a user has the isAdmin flag set to true then all feature flags will be enabled for that user.
-```go
-admin := &User{123, true, ...} // This would be fetched from a db or something
-if flag.EnabledFor(admin) {
-	// Do feature
-} else {
-	// Don't do feature
-}
-```
+Certain groups might need to always have a feature flag enabled. This can be done by returning true for the `AlwaysEnabled` method of the `feature.Group` interface. In our example if a user has the isAdmin flag set to true then that user will have access to all features.
 
 How's it work?
 --------------
