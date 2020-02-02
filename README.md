@@ -1,8 +1,6 @@
 Go Feature Flags
 ================
 
-GoDoc: (https://godoc.org/github.com/jimdoescode/feature)
-
 This is a simple feature flagging library. It allows you to enable a feature for a certain percentage of a group or a population.
 
 Create a new feature flag by using the `feature.NewFlag` method. Provide the feature name and the threshold for how often the feature should be enabled. 
@@ -66,6 +64,11 @@ if flag.Enabled() {
 	// Don't do feature
 }
 ```
+
+Additional Documentation
+------------------------
+
+GoDoc: https://godoc.org/github.com/jimdoescode/feature
 
 Credit where it's due
 ---------------------
