@@ -2,9 +2,10 @@ package feature_test
 
 import (
 	"fmt"
-	"github.com/jimdoescode/feature"
 	"math"
 	"testing"
+
+	"github.com/jimdoescode/feature"
 )
 
 type mock struct {
@@ -92,31 +93,5 @@ func TestEnabled(t *testing.T) {
 
 	if diff := math.Abs(hits - percent); diff > tolerance {
 		t.Error(fmt.Sprintf("flag.Enabled exceeds tolerance of %f. Difference is %f after %d executions.", tolerance, diff, max))
-	}
-}
-
-func TestMinSample(t *testing.T) {
-	flag := feature.NewFlag("always_on", 1.0)
-	b := []byte{0, 0, 0, 0}
-	if !flag.Includes(b) {
-		t.Error("sample.Include should include min value of 0 at 100% size")
-	}
-
-	flag = feature.NewFlag("always_off", 0.0)
-	if flag.Includes(b) {
-		t.Error("sample.Include should NOT include min value of 0 at 0% size")
-	}
-}
-
-func TestMaxSample(t *testing.T) {
-	flag := feature.NewFlag("always_on", 1.0)
-	b := []byte{255, 255, 255, 255}
-	if !flag.Includes(b) {
-		t.Error("sample.Include should include max value of 255 at 100% size")
-	}
-
-	flag = feature.NewFlag("always_off", 0.0)
-	if flag.Includes(b) {
-		t.Error("sample.Include should NOT include max value of 255 at 0% size")
 	}
 }

@@ -1,26 +1,25 @@
 Go Feature Flags
 ================
 
+GoDoc: (https://godoc.org/github.com/jimdoescode/feature)
+
 This is a simple feature flagging library. It allows you to enable a feature for a certain percentage of a group or a population.
 
-Create a new feature flag by using the `feature.NewFlag` method. Provide the feature name and the threshold for how often the feature should be *enabled*. 
+Create a new feature flag by using the `feature.NewFlag` method. Provide the feature name and the threshold for how often the feature should be enabled. 
 ```go
 flag := feature.NewFlag("my new great feature", 0.25)
 ```
 
-To randomly enable a feature flag use the `Enabled` method. This flag will be enabled or not each time it's called. Over a number of calls the number of enabled vs disabled results will converge on the flag threshold. In our case that's 25%.
-```go
-if flag.Enabled() {
-	// Do feature
-} else {
-	// Don't do feature
-}
-```
+How's it work?
+--------------
+
+Feature flagging works by taking the group's identifier combining it with the name of the flag and reducing that hash to a value between 0 and 1. If that value is less than the threshold set for the flag then the feature is enabled. Otherwise it's disabled. This allows you to execute experiments on certain groups or cautiously roll out a new feature.
 
 Groups
 ------
 
-If you'd like to consistently enable a feature flag, meaning it will always be enabled for certain members that are within the flag threshold, you must satisfy the `feature.Group` interface.
+The groups interface is what will let you consistently bucket a feature.
+
 ```go
 type User struct {
 	id uint
@@ -51,7 +50,7 @@ if flag.EnabledFor(user) {
 }
 ```
 
-In our example the feature is enabled for 25% of the users. Those users within the threshold will always have the feature enabled unless the sample size is lowered by changing the flag's threshold percentage. Increasing the threshold percentage will enable the feature flag for new users that fall into the larger sample size.
+In our example the feature is enabled for 25% of the users. Those users within the threshold will **always** have the feature enabled unless the sample size is lowered by changing the flag's threshold percentage. Increasing the threshold percentage will enable the feature flag for new users that fall into the larger sample size.
 
 Certain groups might need to always have a feature flag enabled. This can be done by returning true for the `AlwaysEnabled` method of the `feature.Group` interface. In our example if a user has the isAdmin flag set to true then all feature flags will be enabled for that user.
 ```go
@@ -63,10 +62,17 @@ if flag.EnabledFor(admin) {
 }
 ```
 
-How's it work?
---------------
+Random flagging
+---------------
 
-Feature flagging works by taking the group identifier and reducing it to a value between 0 and 1. If that value is less than the threshold set for a flag then the feature is enabled. Otherwise it's disabled. This allows you to execute experiments on certain groups or cautiously roll out a new feature.
+If you don't need consistent bucketing then you can use the the `Enabled` function. This function will randomly return that a feature is enabled but the number of enabled vs disabled results will converge on the flag's threshold. In our case that's 25%. Which means that if we called `Enabled` 100 times then ~25 of those calls would return true.
+```go
+if flag.Enabled() {
+	// Do feature
+} else {
+	// Don't do feature
+}
+```
 
 Credit where it's due
 ---------------------

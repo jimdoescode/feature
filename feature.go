@@ -15,15 +15,8 @@ type Group interface {
 	AlwaysEnabled() bool
 }
 
-// A sample represents a grouping of things. The size is a percentage
-// of those things. 1.0f means all the things, 0.0f means none of the
-// things.
-type sample struct {
-	size float64
-}
-
 // Determines if the byte slice is within the sample
-func (s sample) Includes(h []byte) bool {
+func includes(size float64, h []byte) bool {
 	l := len(h)
 	// 40 bytes is sufficient for our calculation
 	if l > 40 {
@@ -40,19 +33,21 @@ func (s sample) Includes(h []byte) bool {
 		}
 	}
 
-	return s.size > (float64(v) / float64(vmax))
+	return size > (float64(v) / float64(vmax))
 }
 
 // Flag represents a feature flag
 type Flag struct {
-	sample
-	name   string
-	offset []byte
+	threshold float64
+	name      string
+	offset    []byte
 }
 
-// Create a new feature flag.
+// Create a new feature flag. Use a unique name for each
+// feature you want to flag to ensure that feature Groups
+// are bucketed differently for each feature.
 func NewFlag(name string, threshold float64) *Flag {
-	return &Flag{sample{threshold}, name, []byte(name)}
+	return &Flag{threshold, name, []byte(name)}
 }
 
 // EnabledFor applies a feature flag consistently
@@ -66,7 +61,7 @@ func (f *Flag) EnabledFor(g Group) bool {
 	h.Write(g.GetGroupIdentifier())
 	h.Write(f.offset)
 
-	return f.Includes(h.Sum(nil))
+	return includes(f.threshold, h.Sum(nil))
 }
 
 // Enabled randomly applies a feature flag based
@@ -75,5 +70,5 @@ func (f *Flag) Enabled() bool {
 	b := make([]byte, 40)
 	rand.Read(b)
 
-	return f.Includes(b)
+	return includes(f.threshold, b)
 }
